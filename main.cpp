@@ -9,7 +9,13 @@ int* triangle_allocate(size_t lines);
 size_t triangle_amount_of_elements(size_t triangle_size);
 
 int* my_address_function_rectangle(int* data, size_t sizeY, size_t sizeX, size_t y, size_t x);
-int* my_address_function_triangle(int* data, size_t y, size_t x);
+int* my_address_function_triangle(int* data, size_t sizeY, size_t y, size_t x);
+
+int search_max_triangle(int* data, size_t sizeY);
+//int search_max_rectangle(int* data);
+
+int search_min_triangle(int* data, size_t sizeY);
+//int search_min_rectangle(int* data);
 
 int main()
 {
@@ -18,11 +24,17 @@ int main()
     arr_print(&my_data[0][0], 4, 3);
 */
 
-    size_t triangle_size = 2;
+    size_t triangle_size = 5;
 
     int* ptr_first_triangle = triangle_allocate(triangle_size);
     for (size_t i = 0; i < triangle_amount_of_elements(triangle_size); i++)
         ptr_first_triangle[i] = i;
+
+    int max_value = search_max_triangle(ptr_first_triangle, triangle_size);
+    printf("%d\n", max_value);
+
+    int min_value = search_min_triangle(ptr_first_triangle, triangle_size);
+    printf("%d\n", min_value);
 
     arr_print_triangle(ptr_first_triangle, triangle_size);
 
@@ -34,9 +46,11 @@ void arr_print_rectangle(int* data, size_t sizeY, size_t sizeX)
 {
     for (size_t y = 0; y < sizeY; y++)
     {
-        printf("\n");
         for (size_t x = 0; x < sizeX; x++)
+        {
             printf("[%lu][%lu] = %d ", y, x, *my_address_function_rectangle(data, sizeY, sizeX, y, x));
+            printf("\n");
+        }
     }
     printf("\n");
 }
@@ -47,7 +61,7 @@ void arr_print_triangle(int* data, size_t sizeY) //sizeY = sizeX, поэтому
     {
         printf("\n");
         for (size_t x = 0; x <= y; x++)
-            printf("[%lu][%lu] = %d ", y, x, *my_address_function_triangle(data, y, x));
+            printf("[%lu][%lu] = %d ", y, x, *my_address_function_triangle(data, sizeY, y, x));
     }
     printf("\n");
 }
@@ -64,9 +78,10 @@ int* my_address_function_rectangle(int* data, size_t sizeY, size_t sizeX, size_t
     return (int*) ((size_t) data + (y * sizeX + x) * sizeof(int));
 }
 
-int* my_address_function_triangle(int* data, size_t y, size_t x) //не нужны sizeX и sizeY, и так всё понятно
+int* my_address_function_triangle(int* data, size_t sizeY, size_t y, size_t x) //нужен sizeY для ассертов
 {
     assert(x <= y);
+    assert(y <= sizeY); //< или <=?
 
     return (int*) ((size_t) data + ((y + 1) * (y + 2) / 2 - y - 1 + x) * sizeof(int));
 }
@@ -75,4 +90,41 @@ int* my_address_function_triangle(int* data, size_t y, size_t x) //не нужн
 size_t triangle_amount_of_elements(size_t triangle_size)
 {
     return (triangle_size * (triangle_size + 1) / 2);
+}
+
+
+int search_max_triangle(int* data, size_t sizeY)
+{
+    assert(data != NULL);
+
+    int max_value = -32768;
+
+    for (size_t y = 0; y < sizeY; y++)
+    {
+        for (size_t x = 0; x <= y; x++)  //тут sizeY, так как sizeY = sizeX
+        {
+            int tmp = *my_address_function_triangle(data, sizeY, y, x);
+            if (tmp > max_value)
+                max_value = tmp;
+        }
+    }
+    return max_value;
+}
+
+int search_min_triangle(int* data, size_t sizeY)
+{
+    assert(data != NULL);
+
+    int min_value = 32767;
+
+    for (size_t y = 0; y < sizeY; y++)
+    {
+        for (size_t x = 0; x <= y; x++)  //тут sizeY, так как sizeY = sizeX
+        {
+            int tmp = *my_address_function_triangle(data, sizeY, y, x);
+            if (tmp < min_value)
+                min_value = tmp;
+        }
+    }
+    return min_value;
 }
