@@ -44,6 +44,8 @@ int main()
 
 void arr_print_rectangle(int* data, size_t sizeY, size_t sizeX)
 {
+    assert(data != NULL);
+
     for (size_t y = 0; y < sizeY; y++)
     {
         for (size_t x = 0; x < sizeX; x++)
@@ -57,6 +59,8 @@ void arr_print_rectangle(int* data, size_t sizeY, size_t sizeX)
 
 void arr_print_triangle(int* data, size_t sizeY) //sizeY = sizeX, поэтому оставляем только один
 {
+    assert(data != NULL);
+
     for (size_t y = 0; y < sizeY; y++)
     {
         printf("\n");
@@ -80,10 +84,11 @@ int* my_address_function_rectangle(int* data, size_t sizeY, size_t sizeX, size_t
 
 int* my_address_function_triangle(int* data, size_t sizeY, size_t y, size_t x) //нужен sizeY для ассертов
 {
+    assert(data != NULL);
     assert(x <= y);
     assert(y <= sizeY); //< или <=?
 
-    return (int*) ((size_t) data + ((y + 1) * (y + 2) / 2 - y - 1 + x) * sizeof(int));
+    return (int*) ((size_t) data + ((y) * (y + 1) / 2 + x) * sizeof(int));
 }
 
 
